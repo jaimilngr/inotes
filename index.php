@@ -1,5 +1,4 @@
 <?php  
-// INSERT INTO `notes` (`sno`, `title`, `description`, `tstamp`) VALUES (NULL, 'But Books', 'Please buy books from Store', current_timestamp());
 $insert = false;
 $update = false;
 $delete = false;
@@ -20,7 +19,7 @@ if (!$conn){
 if(isset($_GET['delete'])){
   $sno = $_GET['delete'];
   $delete = true;
-  $sql = "DELETE FROM `notes` WHERE `sno` = '$sno'";
+  $sql = "DELETE FROM `notes` WHERE `sno` = $sno";
   $result = mysqli_query($conn, $sql);
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -31,7 +30,7 @@ if (isset( $_POST['snoEdit'])){
     $description = $_POST["descriptionEdit"];
 
   // Sql query to be executed
-  $sql = "UPDATE `notes` SET `title` = '$title' , `description` = '$description' WHERE `notes`.`sno` = '$sno'";
+  $sql = "UPDATE `notes` SET `title` = '$title' , `description` = '$description' WHERE `notes`.`sno` = $sno";
   $result = mysqli_query($conn, $sql);
   if($result){
     $update = true;
@@ -209,8 +208,7 @@ else{
             <th scope='row'>". $sno . "</th>
             <td>". $row['title'] . "</td>
             <td>". $row['description'] . "</td>
-            <td> <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> 
-            <button class='delete btn btn-sm btn-primary' id=d".$row['sno'].">Delete</button>  </td>
+            <td> <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> <button class='delete btn btn-sm btn-primary' id=d".$row['sno'].">Delete</button>  </td>
           </tr>";
         } 
           ?>
@@ -220,8 +218,6 @@ else{
     </table>
   </div>
   <hr>
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
     crossorigin="anonymous"></script>
@@ -264,7 +260,6 @@ else{
         if (confirm("Are you sure you want to delete this note!")) {
           console.log("yes");
           window.location = `/crud/index.php?delete=${sno}`;
-          // TODO: Create a form and use post request to submit a form
         }
         else {
           console.log("no");
