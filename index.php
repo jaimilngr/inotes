@@ -1,7 +1,9 @@
 <?php  
+// INSERT INTO `note` (`sno`, `title`, `description`, `tstamp`) VALUES (NULL, 'But Books', 'Please buy books from Store', current_timestamp());
 $insert = false;
 $update = false;
 $delete = false;
+$limit= 5;
 // Connect to the Database 
 $servername = "localhost";
 $username = "root";
@@ -19,7 +21,7 @@ if (!$conn){
 if(isset($_GET['delete'])){
   $sno = $_GET['delete'];
   $delete = true;
-  $sql = "DELETE FROM `notes` WHERE `sno` = $sno";
+  $sql = "DELETE FROM `note` WHERE `sno` = $sno";
   $result = mysqli_query($conn, $sql);
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -30,7 +32,7 @@ if (isset( $_POST['snoEdit'])){
     $description = $_POST["descriptionEdit"];
 
   // Sql query to be executed
-  $sql = "UPDATE `notes` SET `title` = '$title' , `description` = '$description' WHERE `notes`.`sno` = $sno";
+  $sql = "UPDATE `note` SET `title` = '$title' , `description` = '$description' WHERE `note`.`sno` = $sno";
   $result = mysqli_query($conn, $sql);
   if($result){
     $update = true;
@@ -44,7 +46,7 @@ else{
     $description = $_POST["description"];
 
   // Sql query to be executed
-  $sql = "INSERT INTO `notes` (`title`, `description`) VALUES ('$title', '$description')";
+  $sql = "INSERT INTO `note` (`title`, `description`) VALUES ('$title', '$description')";
   $result = mysqli_query($conn, $sql);
 
    
@@ -72,7 +74,7 @@ else{
   <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
 
 
-  <title>iNotes - Notes taking made easy</title>
+  <title>inote - note taking made easy</title>
 
 </head>
 
@@ -170,7 +172,7 @@ else{
   }
   ?>
   <div class="container my-4">
-    <h2>Add a Note to iNotes</h2>
+    <h2>Add a Note to inote</h2>
     <form action="/crud/index.php" method="POST">
       <div class="form-group">
         <label for="title">Note Title</label>
@@ -199,7 +201,9 @@ else{
       </thead>
       <tbody>
         <?php 
-          $sql = "SELECT * FROM `notes`";
+          $page = isset($_GET['page']) ? $_GET['page'] : 1;
+          $start = ($page - 1) * $limit;
+          $sql = "SELECT * FROM `note` LIMIT $start, $limit";
           $result = mysqli_query($conn, $sql);
           $sno = 0;
           while($row = mysqli_fetch_assoc($result)){
@@ -211,11 +215,36 @@ else{
             <td> <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> <button class='delete btn btn-sm btn-primary' id=d".$row['sno'].">Delete</button>  </td>
           </tr>";
         } 
+
+        $sql = "SELECT COUNT(sno) AS total FROM `note`";
+        $count_result = mysqli_query($conn, $sql);
+        $count_row = mysqli_fetch_assoc($count_result);
+        $total_records = $count_row['total'];
+        $total_pages = ceil($total_records / $limit);
           ?>
+          
 
 
       </tbody>
     </table>
+  </div>
+  <div class=">
+  <nav aria-label="...">
+  <nav aria-label="...">
+  <ul class="pagination list-inline mx-auto justify-content-center">
+    <li class="page-item <?php if ($page == 1) echo 'disabled'; ?>">
+      <a class="page-link" href="/crud/index.php?page=<?php echo $page - 1; ?>">Previous</a>
+    </li>
+    <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
+      <li class="page-item <?php if ($page == $i) echo 'active'; ?>">
+        <a class="page-link" href="/crud/index.php?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+      </li>
+    <?php endfor; ?>
+    <li class="page-item <?php if ($page == $total_pages) echo 'disabled'; ?>">
+      <a class="page-link" href="/crud/index.php?page=<?php echo $page + 1; ?>">Next</a>
+    </li>
+  </ul>
+</nav>
   </div>
   <hr>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -229,10 +258,10 @@ else{
     crossorigin="anonymous"></script>
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script>
-    $(document).ready(function () {
-      $('#myTable').DataTable();
+    // // $(document).ready(function () {
+    // //   $('#myTable').DataTable();
 
-    });
+    // });
   </script>
   <script>
     edits = document.getElementsByClassName('edit');
