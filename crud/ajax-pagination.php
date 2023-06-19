@@ -6,15 +6,12 @@ $password = "";
 $database = "notes";
 $limit = 5;
 
-// Create a connection
 $conn = mysqli_connect($servername, $username, $password, $database);
 
-// Die if the connection was not successful
 if (!$conn) {
     die("Sorry, we failed to connect: " . mysqli_connect_error());
 }
 
-// Handle delete request
 if (isset($_POST['delete'])) {
     $sno = $_POST['delete'];
     $delete_sql = "DELETE FROM `note` WHERE `sno` = '$sno'";
@@ -27,7 +24,6 @@ if (isset($_POST['delete'])) {
     }
 }
 
-// Handle edit request
 if (isset($_POST['edit_sno']) && isset($_POST['edit_title']) && isset($_POST['edit_description'])) {
     $sno = $_POST['edit_sno'];
     $title = $_POST['edit_title'];
